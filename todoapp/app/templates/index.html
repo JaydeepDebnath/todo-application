@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="eng">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ToDo app</title>
+        <style>
+            .title{
+                background-color: darkslategrey;
+                padding:0%;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>ToDo-App</h2>
+        <div class="d-flex">
+        <form id="addTodoForm">
+            <input type="text" id="title" placeholder="Title" required >
+            <input type="text" id="description" placeholder="description" required>
+            <input type="datetime-local" id="createdAt" placeholder="createdAt">
+            <input type="datetime-local" id="updatedAt" placeholder="updatedAt">
+            <input type="text" id="completed" placeholder="complete-mark">
+            <input type="file" id="image">
+            <button type="submit">Add To-Do</button>
+        </form>
+    </div>
+
+        <!-- List all todos -->
+        <ul id="todoList">
+
+        </ul>
+
+        <!-- Add js -->
+        <script>
+            document.getElementById("addTodoForm").addEventListener("submit",function (event){
+                event.preventDefault();
+                let formData = new FormData();
+
+                formData.append("title",document.getElementById("title").value);
+                formData.append("description",document.getElementById("description").value);
+                formData.append("createdAt",document.getElementById("createdAt").value);
+                formData.append("updatedAt",document.getElementById("updatedAt").value);
+                formData.append("completed",document.getElementById("completed").value);
+                formData.append("image",document.getElementById("image").files[0]);
+
+                fetch("/todos",{
+                    method:"POST",
+                    body:formData,
+                })
+                .then(response => response.json)
+                .then(data =>{
+                    let todoList = document.getElementById("todoList")
+                    let li = document.createElement('li')
+                    li.textContent  = data.message,
+                    todoList.appendChild(li)
+                })
+                .catch(error => console.error('Error':'error occured when fetching the data',error))
+
+            });
+
+            window.onload = function(){
+                fetch("/todos")
+                .then(response => response.json())
+                .then(data =>{
+                    data.forEach(todo =>{
+                        let todoList = document.getElementById("todoList")
+                        let li = document.createElement("li")
+                        li.innerHTML = <h2>`Todos:${todo.}`</h2>
+                    })
+                })
+            }
+        </script>
+    </body>
+</html>
